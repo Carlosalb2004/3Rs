@@ -73,16 +73,5 @@
             android:onClick="ingresar"
             android:text="Ingresar"
             android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="Forgot Password?"
-            android:textSize="16sp" />
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

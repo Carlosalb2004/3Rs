@@ -12,29 +12,59 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.AuthResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
+
 public class Login extends AppCompatActivity {
+
     EditText correo;
     EditText pass;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-        correo= findViewById(R.id.correo);
+
+        correo = findViewById(R.id.correo);
         pass = findViewById(R.id.password);
-    }
-    public void ingresar(View view){
-        if(correo.getText().toString().equalsIgnoreCase("admin") && pass.getText().toString().equalsIgnoreCase("admin")){
-            startActivity(new Intent(this, InterfazPrincipal.class));
-        }
-        else{
-            Toast.makeText(this, "Datos de Inicio Incorrectos", Toast.LENGTH_LONG).show();
-        }
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
+    public void ingresar(View view) {
+        String email = correo.getText().toString();
+        String password = pass.getText().toString();
+
+        // Obtener la referencia al documento del usuario con el correo electrónico proporcionado
+        db.collection("usuarios")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                            // Obtener la contraseña del documento
+                            String storedPassword = document.getString("password");
+                            if (storedPassword != null && storedPassword.equals(password)) {
+                                // Inicio de sesión exitoso
+                                startActivity(new Intent(Login.this, InterfazPrincipal.class));
+                            } else {
+                                // Contraseña incorrecta
+                                Toast.makeText(Login.this, "Contraseña incorrecta.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        // Error al obtener el documento del usuario
+                        Toast.makeText(Login.this, "Error al iniciar sesión: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

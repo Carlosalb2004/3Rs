@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002376914434",
+    "project_id": "rss-b073f",
+    "storage_bucket": "rss-b073f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002376914434:android:39e2ada1011fecac09e91b",
+        "android_client_info": {
+          "package_name": "com.example.tecmovil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByV_pPV65-LO63QMIPartjIdsj0dcCGI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

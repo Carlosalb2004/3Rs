@@ -79,6 +79,7 @@
             android:layout_height="50dp" />
 
         <Button
+            android:id="@+id/btnRegistrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#2196F3"
@@ -95,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Already have account?"
+                android:text="¿Ya tienes una cuenta?"
                 android:textStyle="bold" />
 
             <TextView
