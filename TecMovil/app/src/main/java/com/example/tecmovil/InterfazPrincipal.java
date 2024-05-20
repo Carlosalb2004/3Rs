@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class InterfazPrincipal extends AppCompatActivity {
     private final String nombre = Login.NOMBRE_USUARIO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

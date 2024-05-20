@@ -8,11 +8,6 @@
     android:background="#30C972"
     tools:context=".ActividadReciclaje">
 
-    <!-- Botón para tomar foto -->
-
-    <!-- Título para añadir punto de entrega -->
-
-    <!-- Grupo de botones radiales para selección de punto de entrega -->
     <Button
         android:id="@+id/btnTakePhoto"
         android:layout_width="0dp"
