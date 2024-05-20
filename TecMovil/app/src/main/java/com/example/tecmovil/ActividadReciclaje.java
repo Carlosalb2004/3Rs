@@ -9,12 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,7 +31,7 @@ public class ActividadReciclaje extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actividadreciclaje);
+        setContentView(R.layout.tu_layout_xml);
 
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -40,7 +40,12 @@ public class ActividadReciclaje extends AppCompatActivity {
         btnTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    dispatchTakePictureIntent();
+                } else {
+                    showAlert("Inicio de sesión requerido", "Por favor inicia sesión antes de tomar una foto");
+                }
             }
         });
     }
@@ -82,7 +87,7 @@ public class ActividadReciclaje extends AppCompatActivity {
                     });
         } else {
             // El usuario no está autenticado, muestra una alerta para iniciar sesión
-            showAlert("Iniciar sesión requerido", "Por favor inicia sesión antes de tomar una foto");
+            showAlert("Inicio de sesión requerido", "Por favor inicia sesión antes de tomar una foto");
         }
     }
 
