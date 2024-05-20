@@ -31,10 +31,10 @@
 
             <TextView
                 android:id="@+id/textView7"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Hola \nCatherine"
+                android:text="Hola\n"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -79,6 +79,8 @@
                 android:id="@+id/textView17"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="misPuntos"
+                android:padding="15dp"
                 android:paddingHorizontal="10dp"
                 android:text="Mis Puntos"
                 android:textColor="#FFFFFF"

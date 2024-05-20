@@ -28,7 +28,7 @@ public class Login extends AppCompatActivity {
     EditText correo;
     EditText pass;
     FirebaseFirestore db;
-
+    public static String NOMBRE_USUARIO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +63,7 @@ public class Login extends AppCompatActivity {
                                 String storedPassword = document.getString("password");
                                 if (storedPassword != null && storedPassword.equals(password)) {
                                     // Inicio de sesión exitoso
+                                    NOMBRE_USUARIO = document.getString("nombre");
                                     startActivity(new Intent(Login.this, InterfazPrincipal.class));
                                 } else {
                                     // Contraseña incorrecta
