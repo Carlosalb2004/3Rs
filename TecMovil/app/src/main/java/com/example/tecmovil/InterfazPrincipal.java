@@ -31,4 +31,8 @@ public class InterfazPrincipal extends AppCompatActivity {
     public void misPuntos(View view){
         startActivity(new Intent(this, MisPuntos.class));
     }
+
+     public void Reciclar(View view){
+        startActivity(new Intent(this, ActividadReciclaje.class));
+    }
 }
