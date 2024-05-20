@@ -69,9 +69,14 @@ public class ActividadReciclaje extends AppCompatActivity {
         btnTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openCamera();
+                if (auth.getCurrentUser() != null) {
+                    openCamera();
+                } else {
+                    Toast.makeText(ActividadReciclaje.this, "Debes iniciar sesión para tomar una foto", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         btnIncrease.setOnClickListener(new View.OnClickListener() {
             @Override
