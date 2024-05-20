@@ -107,8 +107,11 @@ public class ActividadReciclaje extends AppCompatActivity {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } else {
+            Toast.makeText(this, "No hay ninguna aplicación de cámara disponible", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -120,34 +123,40 @@ public class ActividadReciclaje extends AppCompatActivity {
         }
     }
 
-    private void uploadImageToFirebase(final Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+    private void uploadImageToFirebase(Bitmap bitmap) {
+        if (auth.getCurrentUser() != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        final StorageReference imageRef = storageRef.child("images/" + UUID.randomUUID().toString() + ".jpg");
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference imageRef = storageRef.child("images/" + UUID.randomUUID().toString() + ".jpg");
 
-        UploadTask uploadTask = imageRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        // Obtiene la URL de la imagen subida
-                        String imageUrl = uri.toString();
-                        saveRecyclingData(imageUrl);
-                    }
-                });
-            }
-        });
+            UploadTask uploadTask = imageRef.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String imageUrl = uri.toString();
+                            saveRecyclingData(imageUrl);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(ActividadReciclaje.this, "Usuario no autenticado. Por favor, inicie sesión.", Toast.LENGTH_SHORT).show();
+            // Aquí puedes redirigir al usuario a la pantalla de inicio de sesión si lo deseas
+        }
     }
+
+
 
     private void saveRecyclingData(String imageUrl) {
         if (auth.getCurrentUser() != null) {
@@ -188,4 +197,3 @@ public class ActividadReciclaje extends AppCompatActivity {
         }
     }
 }
-
