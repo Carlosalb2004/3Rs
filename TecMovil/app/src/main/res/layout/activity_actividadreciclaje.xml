@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@id/textViewAddPoint">
 
         <RadioButton
-            android:id="@+id/radioUCSM"
+            android:id="@+id/radioLugar1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#30C972"
@@ -61,7 +61,7 @@
             android:textColorLink="@color/white" />
 
         <RadioButton
-            android:id="@+id/radioCasaKbro"
+            android:id="@+id/radioLugar2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#30C972"
@@ -70,7 +70,7 @@
             android:textColorLink="@color/white" />
 
         <RadioButton
-            android:id="@+id/radioCasaMaricon"
+            android:id="@+id/radioLugar3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#30C972"
@@ -112,8 +112,9 @@
             android:button="@null"
             android:drawableTop="@drawable/papel"
             android:text="Papel"
+            android:background="@drawable/radio_button_background_selector"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
         <RadioButton
             android:id="@+id/radioCardboard"
@@ -122,8 +123,9 @@
             android:button="@null"
             android:drawableTop="@drawable/carton"
             android:text="Cartón"
+            android:background="@drawable/radio_button_background_selector"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
         <RadioButton
             android:id="@+id/radioPlastic"
@@ -132,8 +134,9 @@
             android:button="@null"
             android:drawableTop="@drawable/plastico"
             android:text="Plástico"
+            android:background="@drawable/radio_button_background_selector"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
         <RadioButton
             android:id="@+id/radioGlass"
@@ -142,8 +145,9 @@
             android:button="@null"
             android:drawableTop="@drawable/vidrio"
             android:text="Vidrio"
+            android:background="@drawable/radio_button_background_selector"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
         <RadioButton
             android:id="@+id/radioMetal"
@@ -152,8 +156,9 @@
             android:button="@null"
             android:drawableTop="@drawable/metal"
             android:text="Metal"
+            android:background="@drawable/radio_button_background_selector"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
     </RadioGroup>
 
     <!-- Título para selección de kilogramos -->
