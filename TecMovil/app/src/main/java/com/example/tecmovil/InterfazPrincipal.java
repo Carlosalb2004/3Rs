@@ -45,13 +45,10 @@ public class InterfazPrincipal extends AppCompatActivity {
             finish();
         }
 
-        buttonLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                auth.signOut();
-                startActivity(new Intent(InterfazPrincipal.this, Login.class));
-                finish();
-            }
+        buttonLogout.setOnClickListener(v -> {
+            auth.signOut();
+            startActivity(new Intent(InterfazPrincipal.this, Login.class));
+            finish();
         });
 
         TipsPagerAdapter tipsPagerAdapter = new TipsPagerAdapter(this, tips);

@@ -1,11 +1,11 @@
 package com.example.tecmovil;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -24,12 +24,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +43,9 @@ public class ActividadReciclaje extends AppCompatActivity {
     private TextView textViewKilosAmount;
     private RadioGroup radioGroupPoints, radioGroupMaterials;
     private int kilos = 0;
+
+    private Bitmap capturedImage;
+    private String imageLocalPath;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -99,22 +103,6 @@ public class ActividadReciclaje extends AppCompatActivity {
         });
     }
 
-    private void validateAndSaveRecyclingData() {
-        if (radioGroupPoints.getCheckedRadioButtonId() == -1 || radioGroupMaterials.getCheckedRadioButtonId() == -1 || kilos == 0) {
-            Toast.makeText(ActividadReciclaje.this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String puntoDeEntrega = ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString();
-        String material = ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString();
-
-        // Aquí podrías añadir una verificación adicional para comprobar datos duplicados o lo que necesites.
-        // Ejemplo: comprobar si ya se ha registrado un reciclaje en la misma fecha, etc.
-
-        // Si todo está correcto, proceder a abrir la cámara para tomar foto
-        openCamera();
-    }
-
     private void openCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -127,85 +115,70 @@ public class ActividadReciclaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadImageToFirebase(imageBitmap);
+            capturedImage = (Bitmap) extras.get("data");
+            // Guardar la imagen capturada en almacenamiento local
+            saveImageLocally(capturedImage);
         }
     }
 
-    private void uploadImageToFirebase(final Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+    private void saveImageLocally(Bitmap imageBitmap) {
+        // Guardar la imagen en el almacenamiento interno del dispositivo
+        String filename = "captured_image.jpg";
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        final StorageReference imageRef = storageRef.child("images/" + UUID.randomUUID().toString() + ".jpg");
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            imageLocalPath = file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        UploadTask uploadTask = imageRef.putBytes(data);
+    private void validateAndSaveRecyclingData() {
+        if (radioGroupPoints.getCheckedRadioButtonId() == -1 || radioGroupMaterials.getCheckedRadioButtonId() == -1 || kilos == 0) {
+            Toast.makeText(ActividadReciclaje.this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Verificar si se ha capturado una imagen
+        if (imageLocalPath == null || imageLocalPath.isEmpty()) {
+            Toast.makeText(ActividadReciclaje.this, "No se ha capturado ninguna imagen", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Subir la imagen al Firebase Storage
+        uploadImageToFirebase();
+    }
+
+    private void uploadImageToFirebase() {
+        // Referencia al Storage de Firebase
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        // Crear una referencia única para la imagen en Firebase Storage
+        String imageName = "image_" + UUID.randomUUID().toString() + ".jpg";
+        StorageReference imageRef = storageRef.child("images/" + imageName);
+
+        // Subir la imagen al Storage de Firebase
+        Uri imageUri = Uri.fromFile(new File(imageLocalPath));
+        UploadTask uploadTask = imageRef.putFile(imageUri);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                // Manejar el fallo de la carga de la imagen
                 Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        // Obtiene la URL de la imagen subida
-                        String imageUrl = uri.toString();
-                        saveRecyclingData(imageUrl);
-                    }
-                });
+                // La imagen se subió exitosamente
+                // Aquí puedes obtener la URL de la imagen y guardarla si es necesario
+                Toast.makeText(ActividadReciclaje.this, "Imagen subida exitosamente", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void saveRecyclingData(String imageUrl) {
-        if (auth.getCurrentUser() != null) {
-            String userId = auth.getCurrentUser().getUid();
-            Map<String, Object> data = new HashMap<>();
-            data.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
-            data.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
-            data.put("kilos", kilos);
-            data.put("imageUrl", imageUrl);
-
-            db.collection("usuarios").document(userId)
-                    .collection("reciclajes").add(data)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(ActividadReciclaje.this, "Se subio su reciclaje con éxito", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(ActividadReciclaje.this, "Error al guardar los datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permisos concedidos, la cámara puede ser abierta
-            } else {
-                Toast.makeText(this, "Permisos de cámara no concedidos", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void sendData(View view) {
-        if (radioGroupPoints.getCheckedRadioButtonId() == -1 || radioGroupMaterials.getCheckedRadioButtonId() == -1 || kilos == 0) {
-            Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show();
-        } else {
-            // Puedes optar por abrir la cámara aquí si es parte de la lógica de enviar datos
-            openCamera();
-        }
-    }
 
 }
+
+
