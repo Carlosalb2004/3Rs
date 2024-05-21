@@ -2,9 +2,4 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-        <color name="colorSeleccionado">#3C491C</color> <!-- Color cuando se selecciona -->
-        <color name="colorNoSeleccionado">#FFFFFF</color> <!-- Color cuando no se selecciona -->
-
-
 </resources>
