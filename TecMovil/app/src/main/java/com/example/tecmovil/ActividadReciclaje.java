@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class ActividadReciclaje extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = auth.getCurrentUser();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("usuarios");
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,15 +131,18 @@ public class ActividadReciclaje extends AppCompatActivity {
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageData = baos.toByteArray();
 
-        // Referencia al Storage de Firebase
-        String imageName = "image_" + UUID.randomUUID().toString() + ".jpg";
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + imageName);
+        // Obtener el nombre del usuario actual
+        String userName = currentUser.getDisplayName();
+
+        // Crear un nombre único para la imagen
+        String imageName = "image_" + userName + "_" + UUID.randomUUID().toString() + ".jpg";
+        StorageReference imageRef = storageRef.child(imageName);
 
         // Subir la imagen al Storage
-        storageRef.putBytes(imageData)
-                .addOnSuccessListener(taskSnapshot -> {
+        UploadTask uploadTask = imageRef.putBytes(imageData);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
                     // Imagen subida con éxito, obtener su URL
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
 
                         // Crear una entrada en la base de datos
@@ -179,6 +184,7 @@ public class ActividadReciclaje extends AppCompatActivity {
         }
     }
 }
+
 
 
 
