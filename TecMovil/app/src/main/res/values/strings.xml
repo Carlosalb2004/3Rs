@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TecMovil</string>
+    <string name="register">Registrarse</string>
+    <string name="login">Loguearte</string>
+    <string name="click_to_register">Click para regisstrarte</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="logout">Cerrar Sesion\n</string>
 </resources>
