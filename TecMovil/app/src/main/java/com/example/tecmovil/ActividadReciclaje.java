@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -19,18 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -44,11 +39,9 @@ public class ActividadReciclaje extends AppCompatActivity {
     private RadioGroup radioGroupPoints, radioGroupMaterials;
     private int kilos = 0;
 
-    private Bitmap capturedImage;
-    private String imageLocalPath;
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = auth.getCurrentUser();
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("usuarios");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,22 +108,8 @@ public class ActividadReciclaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            capturedImage = (Bitmap) extras.get("data");
-            // Guardar la imagen capturada en almacenamiento local
-            saveImageLocally(capturedImage);
-        }
-    }
-
-    private void saveImageLocally(Bitmap imageBitmap) {
-        // Guardar la imagen en el almacenamiento interno del dispositivo
-        String filename = "captured_image.jpg";
-        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
-
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            imageLocalPath = file.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            uploadImageAndSaveData(imageBitmap);
         }
     }
 
@@ -140,45 +119,66 @@ public class ActividadReciclaje extends AppCompatActivity {
             return;
         }
 
-        // Verificar si se ha capturado una imagen
-        if (imageLocalPath == null || imageLocalPath.isEmpty()) {
-            Toast.makeText(ActividadReciclaje.this, "No se ha capturado ninguna imagen", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Subir la imagen al Firebase Storage
-        uploadImageToFirebase();
+        // Si todo está correcto, abrir la cámara para tomar la foto
+        openCamera();
     }
 
-    private void uploadImageToFirebase() {
-        // Referencia al Storage de Firebase
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        // Crear una referencia única para la imagen en Firebase Storage
-        String imageName = "image_" + UUID.randomUUID().toString() + ".jpg";
-        StorageReference imageRef = storageRef.child("images/" + imageName);
-
+    private void uploadImageAndSaveData(Bitmap imageBitmap) {
         // Subir la imagen al Storage de Firebase
-        Uri imageUri = Uri.fromFile(new File(imageLocalPath));
-        UploadTask uploadTask = imageRef.putFile(imageUri);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // Manejar el fallo de la carga de la imagen
-                Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // La imagen se subió exitosamente
-                // Aquí puedes obtener la URL de la imagen y guardarla si es necesario
-                Toast.makeText(ActividadReciclaje.this, "Imagen subida exitosamente", Toast.LENGTH_SHORT).show();
-            }
-        });
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        // Referencia al Storage de Firebase
+        String imageName = "image_" + UUID.randomUUID().toString() + ".jpg";
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + imageName);
+
+        // Subir la imagen al Storage
+        storageRef.putBytes(imageData)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Imagen subida con éxito, obtener su URL
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String imageUrl = uri.toString();
+
+                        // Crear una entrada en la base de datos
+                        DatabaseReference userRef = usersRef.child(currentUser.getUid());
+                        String key = userRef.push().getKey();
+
+                        Map<String, Object> reciclaje = new HashMap<>();
+                        reciclaje.put("uid", key);
+                        reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
+                        reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
+                        reciclaje.put("kilos", kilos);
+                        reciclaje.put("imageUrl", imageUrl);
+
+                        // Guardar los datos del reciclaje bajo la UID del usuario
+                        userRef.child("reciclajes").child(key).setValue(reciclaje)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(ActividadReciclaje.this, "Datos de reciclaje guardados correctamente", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(ActividadReciclaje.this, "Error al guardar los datos de reciclaje: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    // Error al subir la imagen
+                    Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permisos concedidos, la cámara puede ser abierta
+            } else {
+                Toast.makeText(this, "Permisos de cámara no concedidos", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
+
 
 
