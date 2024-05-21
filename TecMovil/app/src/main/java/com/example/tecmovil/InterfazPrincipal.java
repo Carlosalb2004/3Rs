@@ -1,70 +1,72 @@
 package com.example.tecmovil;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class InterfazPrincipal extends AppCompatActivity {
-    private final String nombre = "Hola";
-    FirebaseAuth auth;
-    Button button;
-    TextView textView;
-    FirebaseUser user;
+    private FirebaseAuth auth;
+    private Button buttonLogout;
+    private TextView textViewUserDetails;
+    private ViewPager viewPagerTips;
+
+    private String[] tips = {"Tip 1: Recicla papel y cartón.",
+            "Tip 2: Usa bolsas reutilizables en lugar de bolsas de plástico.",
+            "Tip 3: Reduce el consumo de agua en casa.",
+            "Tip 4: Utiliza bombillas LED para ahorrar energía."};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_interfaz_principal);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-        auth = FirebaseAuth.getInstance();
-        button = findViewById(R.id.logout);
-        textView = findViewById(R.id.user_details);
-        user = auth.getCurrentUser();
 
-        if (user == null){
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
+        auth = FirebaseAuth.getInstance();
+        buttonLogout = findViewById(R.id.logout);
+        textViewUserDetails = findViewById(R.id.user_details);
+        viewPagerTips = findViewById(R.id.viewPagerTips);
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            String userName = user.getDisplayName();
+            if (userName != null && !userName.isEmpty()) {
+                textViewUserDetails.setText("Bienvenido, " + userName);
+            } else {
+                textViewUserDetails.setText("Bienvenido, Usuario");
+            }
+        } else {
+            startActivity(new Intent(getApplicationContext(), Login.class));
             finish();
         }
-        else{
-            textView.setText(user.getEmail());
-        }
-        button.setOnClickListener(new View.OnClickListener() {
+
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
+                auth.signOut();
+                startActivity(new Intent(InterfazPrincipal.this, Login.class));
                 finish();
             }
         });
 
-        TextView textView7 = findViewById(R.id.textView7);
-        String mensajeBienvenida = "Hola \n" + nombre.toUpperCase();
-        textView7.setText(mensajeBienvenida);
+        TipsPagerAdapter tipsPagerAdapter = new TipsPagerAdapter(this, tips);
+        viewPagerTips.setAdapter(tipsPagerAdapter);
     }
-    public void misPuntos(View view){
+
+    public void misPuntos(View view) {
         startActivity(new Intent(this, MisPuntos.class));
     }
 
-     public void Reciclar(View view){
+    public void Reciclar(View view) {
         startActivity(new Intent(this, ActividadReciclaje.class));
     }
-
 }
+
+
+
+

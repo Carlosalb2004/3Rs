@@ -40,61 +40,54 @@ public class Registrar extends AppCompatActivity {
         buttonReg = findViewById(R.id.btn_register);
         progressBar = findViewById(R.id.progressBar);
         textView = findViewById(R.id.loginNow);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
-                finish();
-            }
+        textView.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Login.class);
+            startActivity(intent);
+            finish();
         });
 
-        buttonReg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                String name, email, password;
-                name = editTextName.getText().toString();
-                email = editTextEmail.getText().toString();
-                password = editTextPassword.getText().toString();
+        buttonReg.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+            String name, email, password;
+            name = editTextName.getText().toString();
+            email = editTextEmail.getText().toString();
+            password = editTextPassword.getText().toString();
 
-                if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(Registrar.this, "Ingrese un nombre", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(Registrar.this, "Ingrese un email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(Registrar.this, "Ingrese un contraseña", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                progressBar.setVisibility(View.GONE);
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(name)
-                                        .build();
-                                user.updateProfile(profileUpdates)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(Registrar.this, "¡Cuenta Creada Exitosamente!", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                            } else {
-                                Toast.makeText(Registrar.this, "¡Este correo ya fue registrado!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+            if (TextUtils.isEmpty(name)) {
+                Toast.makeText(Registrar.this, "Ingrese un nombre", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(Registrar.this, "Ingrese un email", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(Registrar.this, "Ingrese un contraseña", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            progressBar.setVisibility(View.GONE);
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(Registrar.this, "¡Cuenta Creada Exitosamente!", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(Registrar.this, Login.class));
+                                            finish();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(Registrar.this, "¡Este correo ya fue registrado!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
 }
