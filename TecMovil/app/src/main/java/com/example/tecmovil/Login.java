@@ -27,17 +27,7 @@ public class Login extends AppCompatActivity {
     ProgressBar progressBar;
     FirebaseAuth mAuth;
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), InterfazPrincipal.class);
-            startActivity(intent);
-            finish();
-        }
 
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,50 +40,41 @@ public class Login extends AppCompatActivity {
         textView = findViewById(R.id.registerNow);
         progressBar = findViewById(R.id.progressBar);
 
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Registrar.class);
-                startActivity(intent);
-                finish();
-            }
+        textView.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Registrar.class);
+            startActivity(intent);
+            finish();
         });
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = editTextEmail.getText().toString();
-                String password = editTextPassword.getText().toString();
+        buttonLogin.setOnClickListener(v -> {
+            String email = editTextEmail.getText().toString();
+            String password = editTextPassword.getText().toString();
 
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(Login.this, "Ingrese un email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(Login.this, "Ingrese una contraseña", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                progressBar.setVisibility(View.VISIBLE);
-
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Se logueo con exito!", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(Login.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // Error en el inicio de sesión
-                                    Toast.makeText(Login.this, "Error en el inicio de sesión. Por favor, compruebe sus credenciales.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(Login.this, "Ingrese un email", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(Login.this, "Ingrese una contraseña", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            progressBar.setVisibility(View.VISIBLE);
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        progressBar.setVisibility(View.GONE);
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Se logueo con exito!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Login.this, InterfazPrincipal.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Error en el inicio de sesión
+                            Toast.makeText(Login.this, "Error en el inicio de sesión. Por favor, compruebe sus credenciales.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
 }

@@ -29,17 +29,6 @@ public class Registrar extends AppCompatActivity {
     TextView textView;
 
     @Override
-    public void onStart(){
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), InterfazPrincipal.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrar);
@@ -85,27 +74,24 @@ public class Registrar extends AppCompatActivity {
                 }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    progressBar.setVisibility(View.GONE);
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(name)
-                                            .build();
-                                    user.updateProfile(profileUpdates)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Toast.makeText(Registrar.this, "¡Cuenta Creada Exitosamente!", Toast.LENGTH_SHORT).show();
-                                                    }
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBar.setVisibility(View.GONE);
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name)
+                                        .build();
+                                user.updateProfile(profileUpdates)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(Registrar.this, "¡Cuenta Creada Exitosamente!", Toast.LENGTH_SHORT).show();
                                                 }
-                                            });
-                                } else {
-                                    Toast.makeText(Registrar.this, "¡No se pudo crear!", Toast.LENGTH_SHORT).show();
-                                }
+                                            }
+                                        });
+                            } else {
+                                Toast.makeText(Registrar.this, "¡Este correo ya fue registrado!", Toast.LENGTH_SHORT).show();
                             }
                         });
             }
