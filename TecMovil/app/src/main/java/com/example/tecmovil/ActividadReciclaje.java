@@ -39,6 +39,7 @@ public class ActividadReciclaje extends AppCompatActivity {
     private TextView textViewKilosAmount;
     private RadioGroup radioGroupPoints, radioGroupMaterials;
     private int kilos = 0;
+    private Bitmap imageBitmap = null; // Almacena la foto tomada
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = auth.getCurrentUser();
@@ -65,37 +66,21 @@ public class ActividadReciclaje extends AppCompatActivity {
         radioGroupPoints = findViewById(R.id.radioGroupPoints);
         radioGroupMaterials = findViewById(R.id.radioGroupMaterials);
 
-        btnTakePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openCamera();
-            }
+        btnTakePhoto.setOnClickListener(v -> openCamera());
+
+        btnIncrease.setOnClickListener(v -> {
+            kilos++;
+            textViewKilosAmount.setText(String.valueOf(kilos));
         });
 
-        btnIncrease.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                kilos++;
+        btnDecrease.setOnClickListener(v -> {
+            if (kilos > 0) {
+                kilos--;
                 textViewKilosAmount.setText(String.valueOf(kilos));
             }
         });
 
-        btnDecrease.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (kilos > 0) {
-                    kilos--;
-                    textViewKilosAmount.setText(String.valueOf(kilos));
-                }
-            }
-        });
-
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validateAndSaveRecyclingData();
-            }
-        });
+        btnSend.setOnClickListener(v -> validateAndSaveRecyclingData());
     }
 
     private void openCamera() {
@@ -110,18 +95,27 @@ public class ActividadReciclaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadImageAndSaveData(imageBitmap);
+            imageBitmap = (Bitmap) extras.get("data"); // Almacena la foto tomada
+            Toast.makeText(this, "Foto tomada con éxito", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void validateAndSaveRecyclingData() {
+        if (imageBitmap == null) {
+            Toast.makeText(ActividadReciclaje.this, "Por favor, primero toma una foto.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (radioGroupPoints.getCheckedRadioButtonId() == -1 || radioGroupMaterials.getCheckedRadioButtonId() == -1 || kilos == 0) {
             Toast.makeText(ActividadReciclaje.this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Si todo está correcto, subir la imagen y guardar los datos del reciclaje
+        uploadImageAndSaveData();
     }
 
-    private void uploadImageAndSaveData(Bitmap imageBitmap) {
+    private void uploadImageAndSaveData() {
         // Subir la imagen al Storage de Firebase
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -148,15 +142,12 @@ public class ActividadReciclaje extends AppCompatActivity {
                         Map<String, Object> userData = new HashMap<>();
                         userData.put("nombre", currentUser.getDisplayName());
                         userData.put("correo", currentUser.getEmail());
-                        // NO GUARDAR LA CONTRASEÑA EN LA BASE DE DATOS EN TIEMPO REAL
 
                         // Guardar los datos del usuario
                         userRef.setValue(userData);
 
                         Map<String, Object> reciclaje = new HashMap<>();
                         reciclaje.put("uid", key);
-                        reciclaje.put("nombreUsuario", currentUser.getDisplayName());
-                        reciclaje.put("correoUsuario", currentUser.getEmail());
                         reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("kilos", kilos);
@@ -168,7 +159,7 @@ public class ActividadReciclaje extends AppCompatActivity {
                                     Toast.makeText(ActividadReciclaje.this, "Datos de reciclaje guardados correctamente", Toast.LENGTH_SHORT).show();
                                 })
                                 .addOnFailureListener(e -> {
-                                    Toast.makeText(ActividadReciclaje.this, "Error al guardar los datos de reciclaje: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ActividadReciclaje.this, "Error al guardar los datos del reciclaje: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
                     });
                 })
@@ -183,15 +174,10 @@ public class ActividadReciclaje extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permisos concedidos, la cámara puede ser abierta
+                Toast.makeText(this, "Permisos de cámara SI concedidos", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Permisos de cámara no concedidos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Permisos de cámara NO concedidos", Toast.LENGTH_SHORT).show();
             }
         }
     }
 }
-
-
-
-
-
