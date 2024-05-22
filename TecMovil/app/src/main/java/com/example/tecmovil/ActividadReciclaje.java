@@ -118,11 +118,7 @@ public class ActividadReciclaje extends AppCompatActivity {
     private void validateAndSaveRecyclingData() {
         if (radioGroupPoints.getCheckedRadioButtonId() == -1 || radioGroupMaterials.getCheckedRadioButtonId() == -1 || kilos == 0) {
             Toast.makeText(ActividadReciclaje.this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show();
-            return;
         }
-
-        // Si todo está correcto, abrir la cámara para tomar la foto
-        openCamera();
     }
 
     private void uploadImageAndSaveData(Bitmap imageBitmap) {
@@ -149,8 +145,18 @@ public class ActividadReciclaje extends AppCompatActivity {
                         DatabaseReference userRef = usersRef.child(currentUser.getUid());
                         String key = userRef.push().getKey();
 
+                        Map<String, Object> userData = new HashMap<>();
+                        userData.put("nombre", currentUser.getDisplayName());
+                        userData.put("correo", currentUser.getEmail());
+                        // NO GUARDAR LA CONTRASEÑA EN LA BASE DE DATOS EN TIEMPO REAL
+
+                        // Guardar los datos del usuario
+                        userRef.setValue(userData);
+
                         Map<String, Object> reciclaje = new HashMap<>();
                         reciclaje.put("uid", key);
+                        reciclaje.put("nombreUsuario", currentUser.getDisplayName());
+                        reciclaje.put("correoUsuario", currentUser.getEmail());
                         reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("kilos", kilos);
@@ -184,6 +190,7 @@ public class ActividadReciclaje extends AppCompatActivity {
         }
     }
 }
+
 
 
 
