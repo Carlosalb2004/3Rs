@@ -3,7 +3,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -66,21 +65,37 @@ public class ActividadReciclaje extends AppCompatActivity {
         radioGroupPoints = findViewById(R.id.radioGroupPoints);
         radioGroupMaterials = findViewById(R.id.radioGroupMaterials);
 
-        btnTakePhoto.setOnClickListener(v -> openCamera());
-
-        btnIncrease.setOnClickListener(v -> {
-            kilos++;
-            textViewKilosAmount.setText(String.valueOf(kilos));
+        btnTakePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCamera();
+            }
         });
 
-        btnDecrease.setOnClickListener(v -> {
-            if (kilos > 0) {
-                kilos--;
+        btnIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                kilos++;
                 textViewKilosAmount.setText(String.valueOf(kilos));
             }
         });
 
-        btnSend.setOnClickListener(v -> validateAndSaveRecyclingData());
+        btnDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (kilos > 0) {
+                    kilos--;
+                    textViewKilosAmount.setText(String.valueOf(kilos));
+                }
+            }
+        });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndSaveRecyclingData();
+            }
+        });
     }
 
     private void openCamera() {
@@ -111,7 +126,6 @@ public class ActividadReciclaje extends AppCompatActivity {
             return;
         }
 
-        // Si todo está correcto, subir la imagen y guardar los datos del reciclaje
         uploadImageAndSaveData();
     }
 
@@ -137,23 +151,17 @@ public class ActividadReciclaje extends AppCompatActivity {
 
                         // Crear una entrada en la base de datos
                         DatabaseReference userRef = usersRef.child(currentUser.getUid());
-                        String key = userRef.push().getKey();
 
-                        Map<String, Object> userData = new HashMap<>();
-                        userData.put("nombre", currentUser.getDisplayName());
-                        userData.put("correo", currentUser.getEmail());
-
-                        // Guardar los datos del usuario
-                        userRef.setValue(userData);
+                        // Generar una nueva clave única para el reciclaje
+                        String key = userRef.child("reciclajes").push().getKey();
 
                         Map<String, Object> reciclaje = new HashMap<>();
-                        reciclaje.put("uid", key);
                         reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
                         reciclaje.put("kilos", kilos);
                         reciclaje.put("imageUrl", imageUrl);
 
-                        // Guardar los datos del reciclaje bajo la UID del usuario
+                        // Guardar los datos del reciclaje bajo la nueva clave
                         userRef.child("reciclajes").child(key).setValue(reciclaje)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(ActividadReciclaje.this, "Datos de reciclaje guardados correctamente", Toast.LENGTH_SHORT).show();
