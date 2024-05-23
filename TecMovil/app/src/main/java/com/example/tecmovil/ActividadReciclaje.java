@@ -137,6 +137,7 @@ public class ActividadReciclaje extends AppCompatActivity {
 
         // Obtener el nombre del usuario actual
         String userName = currentUser.getDisplayName();
+        String userEmail = currentUser.getEmail();
 
         // Crear un nombre único para la imagen
         String imageName = "image_" + userName + "_" + UUID.randomUUID().toString() + ".jpg";
@@ -149,20 +150,23 @@ public class ActividadReciclaje extends AppCompatActivity {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
 
-                        // Crear una entrada en la base de datos
+                        // Crear una entrada en la base de datos para el usuario
                         DatabaseReference userRef = usersRef.child(currentUser.getUid());
+                        userRef.child("nombre").setValue(userName);
+                        userRef.child("correo").setValue(userEmail);
 
-                        // Generar una nueva clave única para el reciclaje
-                        String key = userRef.child("reciclajes").push().getKey();
+                        // Crear una nueva entrada en la base de datos para el reciclaje
+                        DatabaseReference reciclajesRef = userRef.child("reciclajes").push();
+                        String key = reciclajesRef.getKey();
 
                         Map<String, Object> reciclaje = new HashMap<>();
-                        reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
-                        reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
-                        reciclaje.put("kilos", kilos);
                         reciclaje.put("imageUrl", imageUrl);
+                        reciclaje.put("kilos", kilos);
+                        reciclaje.put("material", ((RadioButton)findViewById(radioGroupMaterials.getCheckedRadioButtonId())).getText().toString());
+                        reciclaje.put("puntoDeEntrega", ((RadioButton)findViewById(radioGroupPoints.getCheckedRadioButtonId())).getText().toString());
 
                         // Guardar los datos del reciclaje bajo la nueva clave
-                        userRef.child("reciclajes").child(key).setValue(reciclaje)
+                        reciclajesRef.setValue(reciclaje)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(ActividadReciclaje.this, "Datos de reciclaje guardados correctamente", Toast.LENGTH_SHORT).show();
                                 })
@@ -176,6 +180,7 @@ public class ActividadReciclaje extends AppCompatActivity {
                     Toast.makeText(ActividadReciclaje.this, "Error al subir la imagen: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
