@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -110,7 +111,10 @@ public class ActividadReciclaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data"); // Almacena la foto tomada
+            imageBitmap = (Bitmap) extras.get("data");
+            ImageView imageViewCaptured = findViewById(R.id.imageViewCaptured);
+            imageViewCaptured.setImageBitmap(imageBitmap);
+            imageViewCaptured.setVisibility(View.VISIBLE);  // Hacer visible la imagen
             Toast.makeText(this, "Foto tomada con éxito", Toast.LENGTH_SHORT).show();
         }
     }
@@ -169,6 +173,9 @@ public class ActividadReciclaje extends AppCompatActivity {
                         reciclajesRef.setValue(reciclaje)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(ActividadReciclaje.this, "Datos de reciclaje guardados correctamente", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(ActividadReciclaje.this, InterfazPrincipal.class);
+                                    startActivity(intent);
+                                    finish();
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(ActividadReciclaje.this, "Error al guardar los datos del reciclaje: " + e.getMessage(), Toast.LENGTH_SHORT).show();

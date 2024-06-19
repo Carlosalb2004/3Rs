@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30C972"
-    tools:context=".ActividadReciclaje">
+    android:fillViewport="true">  <!-- Esto asegura que el ScrollView use toda la altura disponible -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#30C972"
+        tools:context=".ActividadReciclaje">
 
     <!-- Botón para tomar foto -->
-
-    <!-- Título para añadir punto de entrega -->
-
-    <!-- Grupo de botones radiales para selección de punto de entrega -->
     <Button
         android:id="@+id/btnTakePhoto"
         android:layout_width="0dp"
@@ -34,6 +35,22 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <!-- ImageView para mostrar la foto capturada -->
+    <ImageView
+        android:id="@+id/imageViewCaptured"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:background="@drawable/image_border"
+        app:layout_constraintTop_toBottomOf="@id/btnTakePhoto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- TextView para el punto de entrega -->
     <TextView
         android:id="@+id/textViewAddPoint"
         android:layout_width="wrap_content"
@@ -43,10 +60,9 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewCaptured"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnTakePhoto" />
-
+        app:layout_constraintEnd_toEndOf="parent" />
     <RadioGroup
         android:id="@+id/radioGroupPoints"
         android:layout_width="0dp"
@@ -232,5 +248,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutKilos"
         tools:visibility="visible" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
