@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -151,7 +152,7 @@ public class ActividadReciclaje extends AppCompatActivity {
                 Toast.makeText(this, "Error al convertir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return;
             }
-            ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+            ImageLabeler labeler= ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
 
             labeler.process(image)
                     .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {

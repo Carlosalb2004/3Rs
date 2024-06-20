@@ -38,14 +38,13 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
-    implementation(libs.firebase.ml.vision)
-    implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.vision.common)
-    implementation(libs.image.labeling.common)
-    implementation(libs.image.labeling.default.common)
+    implementation(libs.image.labeling)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+
 
 }
 

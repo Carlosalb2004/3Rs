@@ -105,11 +105,11 @@
     <!-- Imagen de Puntos -->
     <ImageView
         android:id="@+id/imageView8"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:src="@drawable/puntos"
+        android:layout_marginTop="24dp"
         android:scaleType="centerCrop"
-        android:layout_marginTop="24dp"/>
+        android:src="@drawable/puntos" />
 
 </LinearLayout>
 

@@ -61,202 +61,231 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     <!-- TextView para el punto de entrega -->
-    <TextView
-        android:id="@+id/textViewAddPoint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Lugar donde entregarás:"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/imageViewCaptured"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <RadioGroup
-        android:id="@+id/radioGroupPoints"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewAddPoint">
-
-        <RadioButton
-            android:id="@+id/radio1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#30C972"
-            android:text="Universidad Católica de Santa María"
-            android:textColor="@color/white"
-            android:textColorLink="@color/white" />
-
-        <RadioButton
-            android:id="@+id/radio2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#30C972"
-            android:text="Calle Arequipa 112"
-            android:textColor="@color/white"
-            android:textColorLink="@color/white" />
-
-        <RadioButton
-            android:id="@+id/radio3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#30C972"
-            android:text="Avenida Balta 114"
-            android:textColor="@color/white"
-            android:textColorLink="@color/white" />
-    </RadioGroup>
-
-    <!-- Título para selección de material -->
-    <TextView
-        android:id="@+id/textViewSelectMaterial"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Material que entregarás:"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radioGroupPoints" />
-
-    <!-- Grupo de botones radiales para selección de material -->
-    <RadioGroup
-        android:id="@+id/radioGroupMaterials"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/textViewSelectMaterial"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp">
-
-        <RadioButton
-            android:id="@+id/radioPaper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:button="@null"
-            android:drawableTop="@drawable/papel"
-            android:background="@drawable/radio_button_background_selector"
-            android:text="Papel"/>
-
-        <RadioButton
-            android:id="@+id/radioCardboard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:button="@null"
-            android:drawableTop="@drawable/carton"
-            android:background="@drawable/radio_button_background_selector"
-            android:text="Cartón"/>
-
-        <RadioButton
-            android:id="@+id/radioPlastic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:button="@null"
-            android:drawableTop="@drawable/plastico"
-            android:background="@drawable/radio_button_background_selector"
-            android:text="Plástico"/>
-
-        <RadioButton
-            android:id="@+id/radioGlass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:button="@null"
-            android:drawableTop="@drawable/vidrio"
-            android:background="@drawable/radio_button_background_selector"
-            android:text="Vidrio"/>
-
-        <RadioButton
-            android:id="@+id/radioMetal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:button="@null"
-            android:drawableTop="@drawable/metal"
-            android:background="@drawable/radio_button_background_selector"
-            android:text="Metal"/>
-
-    </RadioGroup>
-
-
-
-    <!-- Título para selección de kilogramos -->
-
-    <!-- Controles para ajustar la cantidad de kilogramos -->
-    <TextView
-        android:id="@+id/textViewKilos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#292424"
-        android:text="Cuántos kilos entregarás:"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radioGroupMaterials" />
-
-    <LinearLayout
-        android:id="@+id/layoutKilos"
-        android:layout_width="194dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewKilos">
-
-        <Button
-            android:id="@+id/btnDecrease"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#30C972"
-            android:text="-"
-            android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/textViewKilosAmount"
+            android:id="@+id/textViewAddPoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@color/white" />
+            android:layout_marginTop="144dp"
+            android:text="Lugar donde entregarás:"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.527"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageViewCaptured" />
+
+        <TextView
+            android:id="@+id/textViewSelectMaterial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Material que entregarás:"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.52"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/radioGroupPoints" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupMaterials"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.415"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewSelectMaterial">
+
+            <RadioButton
+                android:id="@+id/radioPaper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_background_selector"
+                android:button="@null"
+                android:drawableTop="@drawable/papel"
+                android:text="Papel"
+                tools:layout_editor_absoluteX="69dp"
+                tools:layout_editor_absoluteY="392dp" />
+
+            <RadioButton
+                android:id="@+id/radioCardboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_background_selector"
+                android:button="@null"
+                android:drawableTop="@drawable/carton"
+                android:text="Cartón"
+                tools:layout_editor_absoluteX="117dp"
+                tools:layout_editor_absoluteY="392dp" />
+
+            <RadioButton
+                android:id="@+id/radioPlastic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_background_selector"
+                android:button="@null"
+                android:drawableTop="@drawable/plastico"
+                android:text="Plástico"
+                tools:layout_editor_absoluteX="165dp"
+                tools:layout_editor_absoluteY="392dp" />
+
+            <RadioButton
+                android:id="@+id/radioGlass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_background_selector"
+                android:button="@null"
+                android:drawableTop="@drawable/vidrio"
+                android:text="Vidrio"
+                tools:layout_editor_absoluteX="218dp"
+                tools:layout_editor_absoluteY="392dp" />
+
+            <RadioButton
+                android:id="@+id/radioMetal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_background_selector"
+                android:button="@null"
+                android:drawableTop="@drawable/metal"
+                android:text="Metal"
+                tools:layout_editor_absoluteX="266dp"
+                tools:layout_editor_absoluteY="392dp" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textViewKilos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:backgroundTint="#292424"
+            android:text="Cuántos kilos entregarás:"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.518"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/radioGroupMaterials" />
+
+        <LinearLayout
+            android:id="@+id/layoutKilos"
+            android:layout_width="194dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.511"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewKilos">
+
+            <Button
+                android:id="@+id/btnDecrease"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#30C972"
+                android:text="-"
+                android:textColor="@color/white"
+                tools:layout_editor_absoluteX="111dp"
+                tools:layout_editor_absoluteY="497dp" />
+
+            <TextView
+                android:id="@+id/textViewKilosAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/white"
+                tools:layout_editor_absoluteX="199dp"
+                tools:layout_editor_absoluteY="499dp" />
+
+            <Button
+                android:id="@+id/btnIncrease"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#30C972"
+                android:text="+"
+                android:textColor="@color/white"
+                tools:layout_editor_absoluteX="212dp"
+                tools:layout_editor_absoluteY="497dp" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/btnIncrease"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnSend"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#30C972"
-            android:text="+"
-            android:textColor="@color/white" />
-    </LinearLayout>
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#FFC107"
+            android:outlineAmbientShadowColor="@color/white"
+            android:text="Enviar"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutKilos"
+            tools:visibility="visible" />
 
-    <!-- Botón Enviar -->
-    <Button
-        android:id="@+id/btnSend"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:backgroundTint="#FFC107"
-        android:outlineAmbientShadowColor="@color/white"
-        android:text="Enviar"
-        android:textColor="@color/white"
-        android:textColorLink="@color/white"
-        android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutKilos"
-        tools:visibility="visible" />
+        <RadioGroup
+            android:id="@+id/radioGroupPoints"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewAddPoint">
+
+            <RadioButton
+                android:id="@+id/radio1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#30C972"
+                android:text="Universidad Católica de Santa María"
+                android:textColor="@color/white"
+                android:textColorLink="@color/white"
+                tools:layout_editor_absoluteX="2dp"
+                tools:layout_editor_absoluteY="196dp" />
+
+            <RadioButton
+                android:id="@+id/radio2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#30C972"
+                android:text="Calle Arequipa 112"
+                android:textColor="@color/white"
+                android:textColorLink="@color/white"
+                tools:layout_editor_absoluteX="2dp"
+                tools:layout_editor_absoluteY="244dp" />
+
+            <RadioButton
+                android:id="@+id/radio3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#30C972"
+                android:text="Avenida Balta 114"
+                android:textColor="@color/white"
+                android:textColorLink="@color/white"
+                tools:layout_editor_absoluteX="2dp"
+                tools:layout_editor_absoluteY="292dp" />
+        </RadioGroup>
+
+        <!-- Título para selección de material -->
+
+        <!-- Grupo de botones radiales para selección de material -->
+
+
+        <!-- Título para selección de kilogramos -->
+
+    <!-- Controles para ajustar la cantidad de kilogramos -->
+
+        <!-- Botón Enviar -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
