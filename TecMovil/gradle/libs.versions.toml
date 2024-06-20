@@ -14,7 +14,8 @@ firebaseDatabase = "21.0.0"
 googleServiceVersion = "4.4.1"
 firebaseStorage = "21.0.0"
 googleServices = "4.4.1"
-firebaseMlVision = "24.1.0"
+firebaseMlVision = "24.0.3"
+firebaseMlVisionImageLabel = "20.0.1"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -31,6 +32,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-ml-vision = { group = "com.google.firebase", name = "firebase-ml-vision", version.ref = "firebaseMlVision" }
+firebase-ml-vision-image-label-model = { group = "com.google.firebase", name = "firebase-ml-vision-image-label-model", version.ref = "firebaseMlVisionImageLabel" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
