@@ -16,6 +16,9 @@ firebaseStorage = "21.0.0"
 googleServices = "4.4.1"
 firebaseMlVision = "24.0.3"
 firebaseMlVisionImageLabel = "20.0.1"
+visionCommon = "17.3.0"
+imageLabelingCommon = "18.1.0"
+imageLabelingDefaultCommon = "17.0.0"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -33,6 +36,9 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-ml-vision = { group = "com.google.firebase", name = "firebase-ml-vision", version.ref = "firebaseMlVision" }
 firebase-ml-vision-image-label-model = { group = "com.google.firebase", name = "firebase-ml-vision-image-label-model", version.ref = "firebaseMlVisionImageLabel" }
+vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
+image-labeling-common = { group = "com.google.mlkit", name = "image-labeling-common", version.ref = "imageLabelingCommon" }
+image-labeling-default-common = { group = "com.google.mlkit", name = "image-labeling-default-common", version.ref = "imageLabelingDefaultCommon" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

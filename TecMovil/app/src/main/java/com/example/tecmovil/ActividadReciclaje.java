@@ -1,4 +1,5 @@
 package com.example.tecmovil;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -25,9 +28,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabel;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,10 +45,11 @@ public class ActividadReciclaje extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     private static final int REQUEST_IMAGE_CAPTURE = 202;
     private Button btnTakePhoto, btnIncrease, btnDecrease, btnSend;
-    private TextView textViewKilosAmount;
+    private TextView textViewKilosAmount, labelsView;
     private RadioGroup radioGroupPoints, radioGroupMaterials;
     private int kilos = 0;
     private Bitmap imageBitmap = null; // Almacena la foto tomada
+    private ImageView imageViewCaptured;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = auth.getCurrentUser();
@@ -65,6 +75,8 @@ public class ActividadReciclaje extends AppCompatActivity {
         textViewKilosAmount = findViewById(R.id.textViewKilosAmount);
         radioGroupPoints = findViewById(R.id.radioGroupPoints);
         radioGroupMaterials = findViewById(R.id.radioGroupMaterials);
+        labelsView = findViewById(R.id.labels_view);
+        imageViewCaptured = findViewById(R.id.imageViewCaptured);
 
         btnTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,12 +122,58 @@ public class ActividadReciclaje extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            ImageView imageViewCaptured = findViewById(R.id.imageViewCaptured);
-            imageViewCaptured.setImageBitmap(imageBitmap);
-            imageViewCaptured.setVisibility(View.VISIBLE);  // Hacer visible la imagen
-            Toast.makeText(this, "Foto tomada con éxito", Toast.LENGTH_SHORT).show();
+            try {
+                Bundle extras = data.getExtras();
+                imageBitmap = (Bitmap) extras.get("data");
+                if (imageBitmap != null) {
+                    imageViewCaptured.setImageBitmap(imageBitmap);
+                    imageViewCaptured.setVisibility(View.VISIBLE);  // Hacer visible la imagen
+                    Toast.makeText(this, "Foto tomada con éxito", Toast.LENGTH_SHORT).show();
+                    // Procesar imagen para etiquetado
+                    processImageForLabeling(imageBitmap);
+                } else {
+                    Toast.makeText(this, "Error al capturar la imagen. Intenta de nuevo.", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al procesar la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void processImageForLabeling(Bitmap bitmap) {
+        if (bitmap != null) {
+            InputImage image;
+            try {
+                image = InputImage.fromBitmap(bitmap, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al convertir la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                return;
+            }
+            ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+
+            labeler.process(image)
+                    .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
+                        @Override
+                        public void onSuccess(List<ImageLabel> labels) {
+                            StringBuilder labelText = new StringBuilder("Detectado:\n");
+                            for (ImageLabel label : labels) {
+                                labelText.append(label.getText()).append(" - ")
+                                        .append(String.format("%.1f%%", label.getConfidence() * 100)).append("\n");
+                            }
+                            labelsView.setText(labelText.toString());
+                            labelsView.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(ActividadReciclaje.this, "Error al etiquetar la imagen: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "La imagen no puede ser nula.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -201,3 +259,4 @@ public class ActividadReciclaje extends AppCompatActivity {
         }
     }
 }
+
